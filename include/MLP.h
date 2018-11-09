@@ -5,21 +5,17 @@
 #include "activation.h"
 
 class MLP{
+public:
 	int hidden_layer_size;
 	numpy w1;
 	numpy w2;
 	numpy b1;
 	numpy b2;
-public:
 	MLP(){};
 	MLP(int layer_size);
 
-	void train();
-	bool prediction();
-	void baclprop();
-}
-
-
-
-
-
+	void train(numpy x_train,numpy y_train,numpy,int iterate, double learning_rate);
+	bool prediction(numpy x);
+	void backprop(numpy x_train, numpy y_train,double learning_rate);
+	double test(numpy x_test,numpy y_test);
+};

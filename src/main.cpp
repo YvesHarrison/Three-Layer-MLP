@@ -1,9 +1,9 @@
 #include "std_lib_facilities.h"
 #include "Numpy.h"
 #include "activation.h"
-int main()
-{
-    cout << "Task 3:" << '\n';
+#include "MLP.h"
+int main(){
+    
 
     vector<vector<double>> A = {
         { 1, 5, 9, 4, 12 },
@@ -22,8 +22,8 @@ int main()
 
     numpy MA{ A };
     numpy MB{ B };
-	cout << "MA:" << '\n';
-    cout << MA << '\n';
+	cout << "(1-MA):" << '\n';
+    cout << MA-MA << '\n';
 	cout << "MB:" << '\n';
     cout << MB << '\n';
 	numpy MC=dot(MA,MB);
@@ -33,7 +33,11 @@ int main()
 	numpy MD = numpy(-0.5, 0.5, 4, 4);
 	cout << MD << '\n';
 	numpy ME = sigmod(MD);
+	cout << "ME" << '\n';
 	cout << ME << '\n';
+	cout << "1" << '\n';
+	numpy MF = ME.get_row(1);
+	cout <<  MF<< '\n';
     keep_window_open();
 
     return 0;

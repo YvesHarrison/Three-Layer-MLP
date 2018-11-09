@@ -23,6 +23,14 @@ numpy::numpy(const double low,const double high,const int row,const int col){
     np_columns = nparray[0].size();
 }
 
+numpy::numpy(const int row,const int col,double value){
+	vector<vector<double>>data(row,vector<double>(col,value));
+
+	nparray=data;
+	np_rows = nparray.size();
+    np_columns = nparray[0].size();
+}
+
 int numpy::rows() const{
     return np_rows;
 }
@@ -36,6 +44,16 @@ double numpy::position(int row, int column){
         error("out of bounds");
 
     return nparray[row][column];
+}
+
+numpy numpy::get_row(int row){
+	if (0 > row && np_rows <= row )
+       error("out of bounds");
+
+    vector<vector<double>>mid;
+    mid.push_back(nparray[row]);
+    numpy  res(mid);
+    return res;
 }
 
 numpy dot(numpy &m1, numpy &m2){
@@ -98,6 +116,120 @@ numpy operator + (numpy &m1, double m2) {
 	return m3;
 }
 
+numpy operator - (numpy &m1, double m2) {
+	int r = m1.rows(), c = m1.columns();
+	vector<vector<double>>a(r, vector<double>(c, 0.0));
+
+	for (int i = 0; i < r; ++i) {
+		for (int j = 0; j < c; ++j) {
+			a[i][j] = m1.position(i, j) - m2;
+		}
+	}
+	// 
+	numpy m3(a);
+	return m3;
+}
+
+numpy operator - (double m2,numpy &m1) {
+	int r = m1.rows(), c = m1.columns();
+	vector<vector<double>>a(r, vector<double>(c, 0.0));
+
+	for (int i = 0; i < r; ++i) {
+		for (int j = 0; j < c; ++j) {
+			a[i][j] = m2-m1.position(i, j);
+		}
+	}
+	// 
+	numpy m3(a);
+	return m3;
+}
+
+numpy operator - (numpy &m1, int m2) {
+	int r = m1.rows(), c = m1.columns();
+	vector<vector<double>>a(r, vector<double>(c, 0.0));
+
+	for (int i = 0; i < r; ++i) {
+		for (int j = 0; j < c; ++j) {
+			a[i][j] = m1.position(i, j) - m2;
+		}
+	}
+	// 
+	numpy m3(a);
+	return m3;
+}
+
+numpy operator - (int m2, numpy &m1) {
+	int r = m1.rows(), c = m1.columns();
+	vector<vector<double>>a(r, vector<double>(c, 0.0));
+
+	for (int i = 0; i < r; ++i) {
+		for (int j = 0; j < c; ++j) {
+			a[i][j] = m2 - m1.position(i, j);
+		}
+	}
+	// 
+	numpy m3(a);
+	return m3;
+}
+
+numpy operator - (numpy &m1, numpy &m2) {
+	if (m1.rows() != m2.rows() || m1.columns() != m2.columns()) error("unmatch numpy array subtraction");
+	int r = m1.rows(), c = m1.columns();
+	vector<vector<double>>a(r, vector<double>(c, 0.0));
+
+	for (int i = 0; i < r; ++i) {
+		for (int j = 0; j < c; ++j) {
+			a[i][j] = m1.position(i, j) - m2.position(i, j);
+		}
+	}
+
+	numpy m3(a);
+	return m3;
+}
+
+numpy operator *(numpy &m1, numpy &m2){
+	if(m1.columns()!=m2.rows()) error("unmatch numpy array for dot product");
+	vector<vector<double>>data(m1.rows(),vector<double>(m2.columns(),0.0));
+
+	for(int i=0;i<m1.rows();++i){
+		for(int j=0;j<m2.columns();++j){
+			for(int k=0;k<m1.columns();++k){
+				data[i][j]+=m1.position(i,k)*m2.position(k,j);
+			}
+		}
+	}
+
+	numpy res(data);
+	return res;
+}
+
+numpy operator / (numpy &m1, int m2) {
+	int r = m1.rows(), c = m1.columns();
+	vector<vector<double>>a(r, vector<double>(c, 0.0));
+
+	for (int i = 0; i < r; ++i) {
+		for (int j = 0; j < c; ++j) {
+			a[i][j] = m1.position(i, j) / m2;
+		}
+	}
+	// 
+	numpy m3(a);
+	return m3;
+}
+
+numpy operator / (numpy &m1, double m2) {
+	int r = m1.rows(), c = m1.columns();
+	vector<vector<double>>a(r, vector<double>(c, 0.0));
+
+	for (int i = 0; i < r; ++i) {
+		for (int j = 0; j < c; ++j) {
+			a[i][j] = m1.position(i, j) / m2;
+		}
+	}
+	// 
+	numpy m3(a);
+	return m3;
+}
 ostream& operator<<(ostream& os, numpy& m){
     for (int i = 0; i < m.rows(); ++i) {
         for (int j = 0; j < m.columns(); ++j) {

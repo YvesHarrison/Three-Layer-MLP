@@ -34,6 +34,8 @@ numpy operator - (numpy &m1, int m2);
 numpy operator - (int m2, numpy &m1);
 numpy operator - (numpy &m1, numpy &m2);
 numpy operator * (numpy &m1, numpy &m2);
+numpy operator * (double m1, numpy &m2);
+numpy operator * (numpy &m1, double m2);
 
 
 

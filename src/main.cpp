@@ -20,24 +20,40 @@ int main(){
         { 9, 7, 5, 3 }
     };
 
+    vector<vector<double>> C = {
+        { 1 },
+        { 1 },
+        { 0 },
+        { 0 }
+    };
+
+	vector<vector<double>> D = {
+		{ 1 ,1 ,0 ,0}
+	};
+
     numpy MA{ A };
     numpy MB{ B };
-	cout << "(1-MA):" << '\n';
-    cout << MA-MA << '\n';
-	cout << "MB:" << '\n';
-    cout << MB << '\n';
-	numpy MC=dot(MA,MB);
-    cout << MC << '\n';
-	MB.reshape(4, 5);
-	cout << MB << '\n';
-	numpy MD = numpy(-0.5, 0.5, 4, 4);
-	cout << MD << '\n';
-	numpy ME = sigmod(MD);
-	cout << "ME" << '\n';
-	cout << ME << '\n';
-	cout << "1" << '\n';
-	numpy MF = ME.get_row(1);
-	cout <<  MF<< '\n';
+    numpy MC{C};
+	numpy MD{ D };
+	//cout << dot(MC, MD)<<endl;
+    MLP test=MLP(10);
+	test.train(MA, MC, 10, 0.01);
+	// cout << "(1-MA):" << '\n';
+ //    cout << MA-MA << '\n';
+	// cout << "MB:" << '\n';
+ //    cout << MB << '\n';
+	// numpy MC=dot(MA,MB);
+ //    cout << MC << '\n';
+	// MB.reshape(4, 5);
+	// cout << MB << '\n';
+	// numpy MD = numpy(-0.5, 0.5, 4, 4);
+	// cout << MD << '\n';
+	// numpy ME = sigmod(MD);
+	// cout << "ME" << '\n';
+	// cout << ME << '\n';
+	// cout << "1" << '\n';
+	// numpy MF = ME.get_row(1);
+	// cout <<  MF<< '\n';
     keep_window_open();
 
     return 0;

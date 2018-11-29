@@ -78,7 +78,7 @@ void numpy::reshape(int row,int col){
 
 	for(int i=0;i<row;++i){
 		for(int j=0;j<col;++j){
-			data[i][j]=this->position((i*j+j)/this->columns(), (i*j + j) %this->columns());
+			data[i][j]=this->position((i*col+j)/this->columns(), (i*col + j) %this->columns());
 		}
 	}
 
@@ -188,14 +188,39 @@ numpy operator - (numpy &m1, numpy &m2) {
 }
 
 numpy operator *(numpy &m1, numpy &m2){
-	if(m1.columns()!=m2.rows()) error("unmatch numpy array for dot product");
-	vector<vector<double>>data(m1.rows(),vector<double>(m2.columns(),0.0));
+	if(m1.columns()!= m2.columns()||m1.rows()!=m2.rows()) error("unmatch numpy array for star product");
+	vector<vector<double>>data(m1.rows(),vector<double>(m1.columns(),0.0));
 
 	for(int i=0;i<m1.rows();++i){
-		for(int j=0;j<m2.columns();++j){
-			for(int k=0;k<m1.columns();++k){
-				data[i][j]+=m1.position(i,k)*m2.position(k,j);
-			}
+		for(int j=0;j<m1.columns();++j){
+			data[i][j]+=m1.position(i,j)*m2.position(i,j);
+			
+		}
+	}
+
+	numpy res(data);
+	return res;
+}
+
+numpy operator *(double m1, numpy &m2) {
+	vector<vector<double>>data(m2.rows(), vector<double>(m2.columns(), 0.0));
+
+	for (int i = 0; i < m2.rows(); ++i) {
+		for (int j = 0; j < m2.columns(); ++j) {
+		data[i][j] += m1*m2.position(i, j);		
+		}
+	}
+
+	numpy res(data);
+	return res;
+}
+
+numpy operator *(numpy &m1, double m2) {
+	vector<vector<double>>data(m1.rows(), vector<double>(m1.columns(), 0.0));
+
+	for (int i = 0; i < m1.rows(); ++i) {
+		for (int j = 0; j < m1.columns(); ++j) {
+			data[i][j] += m2 * m1.position(i, j);
 		}
 	}
 
@@ -231,10 +256,13 @@ numpy operator / (numpy &m1, double m2) {
 	return m3;
 }
 ostream& operator<<(ostream& os, numpy& m){
+	os << "[ ";
     for (int i = 0; i < m.rows(); ++i) {
+		os << "[ ";
         for (int j = 0; j < m.columns(); ++j) {
-            os << m.position(i, j) << '\t';
+            os << m.position(i, j) << "  ";
         }
+		os << "] ]";
         if (i < m.rows() - 1) {
             os << '\n';
         }

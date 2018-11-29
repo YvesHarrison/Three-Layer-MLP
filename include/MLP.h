@@ -14,7 +14,7 @@ public:
 	MLP(){};
 	MLP(int layer_size);
 
-	void train(numpy x_train,numpy y_train,numpy,int iterate, double learning_rate);
+	void train(numpy x_train,numpy y_train,int iterate, double learning_rate);
 	bool prediction(numpy x);
 	void backprop(numpy x_train, numpy y_train,double learning_rate);
 	double test(numpy x_test,numpy y_test);

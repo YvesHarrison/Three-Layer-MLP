@@ -262,11 +262,11 @@ ostream& operator<<(ostream& os, numpy& m){
         for (int j = 0; j < m.columns(); ++j) {
             os << m.position(i, j) << "  ";
         }
-		os << "] ]";
+		os << "] ";
         if (i < m.rows() - 1) {
             os << '\n';
         }
     }
-
+	os << "] ";
     return os;
 }

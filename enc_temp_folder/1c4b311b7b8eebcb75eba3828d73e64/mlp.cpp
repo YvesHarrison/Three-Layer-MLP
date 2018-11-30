@@ -69,6 +69,7 @@ void MLP::train(numpy x_train,numpy y_train,int iterate, double learning_rate) {
 	for(int i=0;i<iterate;++i){
 		cout << i+1 << "th epoch " ;
 		this->backprop(x_train,y_train,learning_rate);
+		cout << "a" << endl;
 		double res = this->test(x_train, y_train);
 		cout << "Training Accuracy: " <<res*100<<"%"<< endl;
 	}

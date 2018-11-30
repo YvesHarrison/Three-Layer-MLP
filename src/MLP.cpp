@@ -43,8 +43,8 @@ void MLP::backprop(numpy x_train, numpy y_train, double learning_rate){
 		middle.reshape(this->hidden_layer_size, x_train.columns());
 
 	 	w1_grad=w1_grad+middle;
-		cout << "w1_grad" << endl;
-		cout << w1_grad << endl;
+		//cout << "w1_grad" << endl;
+		//cout << w1_grad << endl;
 		numpy temp= (0.0 - this->w2)*hidden_T*re*(1.0 - re)*(y_train.position(j, 0) - re);
 		temp.reshape(this->hidden_layer_size, 1);
 	 	b1_grad=b1_grad+temp;

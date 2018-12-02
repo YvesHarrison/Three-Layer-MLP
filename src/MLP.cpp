@@ -82,7 +82,7 @@ double MLP::prediction(numpy x){
 	numpy layer_input=dot(this->w1,x)+this->b1;
 	numpy layer_output= sigmod(layer_input);
 	numpy output= sigmod(dot(this->w2,layer_output)+this->b2);
-	cout << output.position(0, 0) << endl;
+	
 	return (output.position(0,0)>0.5?1.0:0.0);
 }
 
@@ -92,5 +92,126 @@ double MLP::test(numpy x_test,numpy y_test){
 		if (this->prediction(x_test.get_row(i)) == y_test.position(i, 0))cnt++;
 	}
 	return (double) cnt/x_test.rows();
+}
+
+void MLP::save(string filename) {
+	if (filename == "")error("Saving file name must be provided!");
+	ofstream fout(filename);
+	fout << "hidden_layer_size" << endl;
+	fout << this->hidden_layer_size<<endl;
+	fout << "w1" << endl;
+	fout << this->w1 << endl;
+	//cout << "w1" << endl;
+	//cout << w1 << endl;
+	fout << "b1" << endl;
+	fout << this->b1 << endl;
+	//cout << "b1" << endl;
+	//cout << b1 << endl;
+	fout << "w2" << endl;
+	fout << this->w2 << endl;
+	//cout << "w2" << endl;
+	//cout << w2 << endl;
+	fout<<"b2"<<endl;
+	fout << this->b2 << endl;
+	//cout << "b2" << endl;
+	//cout << b2 << endl;
+	fout.close();
+	cout << "Save finished" << endl;
+}
+
+void MLP::load(string filename) {
+	ifstream inFile(filename, ios::in);
+	string lineStr;
+	string pre;
+	int hidden = -1;
+	vector<vector<double>>wt1;
+	vector<vector<double>>wt2;
+	vector<vector<double>>bt1;
+	vector<vector<double>>bt2;
+	numpy n_w1;
+	numpy n_b1;
+	numpy n_w2;
+	numpy n_b2;
+	while (getline(inFile, lineStr)) {
+		stringstream ss(lineStr);
+		//cout << lineStr << endl;
+		string str;
+		vector<string> line;
+		while (getline(ss, str, '\t')) {
+			line.push_back(str);
+			//cout << str << " ";
+		}
+		if (pre == "hidden_layer_size") {
+			hidden = stoi(line[0]);
+		}
+		else if (pre == "w1") {
+			cout << "Loading w1..." << endl;
+			vector<double>s1;
+			for (int i = 0; i < line.size(); ++i) {
+				s1.push_back(stod(line[i]));
+			}
+
+			if (hidden == -1)error("Wrong input format");
+			wt1.push_back(s1);
+			n_w1 = numpy(wt1);
+			n_w1.reshape(hidden, wt1[0].size() / hidden);
+			
+		}
+		else if (pre == "b1") {
+			cout << "Loading b1..." << endl;
+			vector<double>s2;
+			for (int i = 0; i < line.size(); ++i) {
+				s2.push_back(stod(line[i]));
+			}
+
+			if (hidden == -1)error("Wrong input format");
+			bt1.push_back(s2);
+			n_b1 = numpy(bt1);
+			n_b1.reshape(hidden, 1);
+			
+		}
+		else if (pre == "w2") {
+			cout << "Loading w2..." << endl;
+			vector<double>s3;
+			for (int i = 0; i < line.size(); ++i) {
+				s3.push_back(stod(line[i]));
+			}
+
+			if (hidden == -1)error("Wrong input format");
+			wt2.push_back(s3);
+			n_w2 = numpy(wt2);
+			n_w2.reshape(1, hidden);
+		}
+		else if (pre == "b2") {
+			cout << "Loading b2..." << endl;
+			vector<double>s4;
+			for (int i = 0; i < line.size(); ++i) {
+				s4.push_back(stod(line[i]));
+			}
+
+			if (hidden == -1)error("Wrong input format");
+			bt2.push_back(s4);
+			n_b2 = numpy(bt2);
+			n_b2.reshape(1, 1);
+		}
+		pre = lineStr;
+	}
+	this->hidden_layer_size = hidden;
+	this->w1 = n_w1;
+	this->w2 = n_w2;
+	this->b1 = n_b1;
+	this->b2 = n_b2;
+	
+	//cout << "w1" << endl;
+	//cout << this->w1 << endl;
+	
+	//cout << "b1" << endl;
+	//cout << this->b1 << endl;
+	
+	//cout << "w2" << endl;
+	//cout << this->w2 << endl;
+	
+	//cout << "b2" << endl;
+	//cout << this->b2 << endl;
 }
 

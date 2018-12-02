@@ -256,17 +256,17 @@ numpy operator / (numpy &m1, double m2) {
 	return m3;
 }
 ostream& operator<<(ostream& os, numpy& m){
-	os << "[ ";
+	//os << "[ ";
     for (int i = 0; i < m.rows(); ++i) {
-		os << "[ ";
+		//os << "[ ";
         for (int j = 0; j < m.columns(); ++j) {
-            os << m.position(i, j) << "  ";
+            os << m.position(i, j) << '\t';
         }
-		os << "] ";
-        if (i < m.rows() - 1) {
-            os << '\n';
-        }
+		//os << "] ";
+        //if (i < m.rows() - 1) {
+            //os << '\n';
+        //}
     }
-	os << "] ";
+	//os << "] ";
     return os;
 }

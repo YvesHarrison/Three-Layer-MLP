@@ -3,41 +3,70 @@
 #include "activation.h"
 #include "MLP.h"
 
+void read_csv(string &filename, vector< vector<double> > &output)
+{
+	fstream file(filename, ios::in);
+
+	if (!file.is_open())
+	{
+		cout << "File not found!\nEnter correct file name: ";
+	}
+
+	string line;
+
+	while (getline(file, line))
+	{
+		istringstream csv_stream(line);
+		vector<double> oneline;
+		string element;
+
+		while (getline(csv_stream, element, ',')) {
+			oneline.push_back(stod(element));
+		}
+
+		output.push_back(oneline);
+	}
+
+	file.close();
+}
+
 int main()try{
-	vector<vector<double>> A = {
-		{ 1, 5, 9, 4, 12 },
-		{ 7, 12, 3, 5, 8 },
-		{ 8, 4, 15, 9, 5 },
-		{ 6, 3, 12, 8, 1 }
-	};
+	string filename = "../../../input/stock_train_data_20170916().csv";
+	vector< vector<double> > A;
+	read_csv(filename, A);
+	vector< vector<double> > x_train;
+	vector< vector<double> > y_train;
+	vector< vector<double> > y_test;
+	vector< vector<double> > x_test;
+	
+	for (int i = 0; i < A.size(); i++) {
+		vector<double> n;
+		vector<double> m;
+		for (int j = 0; j < 87; ++j) {
+			n.push_back(A[i][j]);
+			//cout << A[i][j];
+		}
+		//cout << endl;
+		if (i < 0.7*A.size()) {
+			m.push_back(A[i][88]);
+			y_train.push_back(m);
+			x_train.push_back(n);
+		}
+		else {
+			m.push_back(A[i][88]);
+			y_test.push_back(m);
+			x_test.push_back(n);
+		}
 
-	vector<vector<double>> B = {
-		{ 3, 2, 9, 8 },
-		{ 1, 2, 3, 4 },
-		{ 9, 8, 7, 6 },
-		{ 2, 3, 4, 5 },
-		{ 9, 7, 5, 3 }
-	};
-
-	vector<vector<double>> C = {
-		{ 1 },
-		{ 1 },
-		{ 0 },
-		{ 0 }
-	};
-
-	vector<vector<double>> D = {
-		{ 1 ,1 ,0 ,0}
-	};
-
-	numpy MA{ A };
-	numpy MB{ B };
-	numpy MC{ C };
-	numpy MD{ D };
-	MLP test = MLP(10);
-	test.train(MA, MC, 10, 0.01);
+	}
+	numpy MA{ x_train };
+	numpy MB{ y_train };
+	numpy MC{ x_test };
+	numpy MD{ y_test };
+	MLP test = MLP(55);
+	test.train(MA, MB, 200 ,0.0001,false,true);
+	test.test(MC,MD);
 	test.save("../../../model/model.txt");
-	test.load("../../../model/model.txt");
     keep_window_open();
 
     return 0;

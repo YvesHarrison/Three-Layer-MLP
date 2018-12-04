@@ -4,7 +4,7 @@ MLP::MLP(int layer_size){
 	this->hidden_layer_size=layer_size;
 }
 
-void MLP::backprop(numpy x_train, numpy y_train, double learning_rate){
+void MLP::backprop(numpy &x_train, numpy &y_train, double learning_rate){
 	numpy w1_grad = numpy(this->hidden_layer_size, x_train.columns(), 0.0);
 	numpy w2_grad = numpy(1, this->hidden_layer_size, 0.0);
 	numpy b1_grad = numpy(this->hidden_layer_size, 1, 0.0);
@@ -13,6 +13,11 @@ void MLP::backprop(numpy x_train, numpy y_train, double learning_rate){
 	int row=x_train.rows();
 	
 	for(int j=0;j<row;++j){
+		//Legacy for Incremental Mode
+		//numpy w1_grad = numpy(this->hidden_layer_size, x_train.columns(), 0.0);
+		//numpy w2_grad = numpy(1, this->hidden_layer_size, 0.0);
+		//numpy b1_grad = numpy(this->hidden_layer_size, 1, 0.0);
+		//numpy b2_grad = numpy(1, 1, 0.0);
 	 	numpy tmp=x_train.get_row(j);
 		tmp.reshape(x_train.columns(), 1);
 		
@@ -42,6 +47,12 @@ void MLP::backprop(numpy x_train, numpy y_train, double learning_rate){
 		numpy temp= (0.0 - this->w2)*hidden_T*re*(1.0 - re)*(y_train.position(j, 0) - re);
 		temp.reshape(this->hidden_layer_size, 1);
 	 	b1_grad=b1_grad+temp;
+
+		//Legacy for Incremental Mode
+		//this->w1 = this->w1 - learning_rate * w1_grad;
+		//this->w2 = this->w2 - learning_rate * w2_grad;
+		//this->b1 = this->b1 - learning_rate * b1_grad;
+		//this->b2 = this->b2 - learning_rate * b2_grad;
 	}
 	
 	 this->w1=this->w1-learning_rate*w1_grad/row;
@@ -50,12 +61,14 @@ void MLP::backprop(numpy x_train, numpy y_train, double learning_rate){
 	 this->b2=this->b2-learning_rate*b2_grad/row;
 }
 
-void MLP::train(numpy x_train,numpy y_train,int iterate, double learning_rate) {
+void MLP::train(numpy &x_train,numpy &y_train,int iterate, double learning_rate, bool adjust, bool save) {
 	int x_row=x_train.rows();
 	int y_row=y_train.rows();
 	
 	if(x_row!=y_row) error("unmatch trainning data");
-	
+	if (this->w1.rows() == 0) {
+
+	}
 	double low=-sqrt(6.0/(x_train.columns()+this->hidden_layer_size));
 	double high=sqrt(6.0/(x_train.columns()+this->hidden_layer_size));
 
@@ -64,13 +77,24 @@ void MLP::train(numpy x_train,numpy y_train,int iterate, double learning_rate) {
 	this->b1=numpy(low,high,this->hidden_layer_size,1);
 	this->b2=numpy(low,high,1,1);
 
-	cout << "Train Begin"<< endl;
-
+	cout << "Training Begin"<< endl;
+	//cout << "b2" << endl;
+	//cout << b2 << endl;
+	int k = 1;
 	for(int i=0;i<iterate;++i){
+		cout << learning_rate << endl;
 		cout << i+1 << "th epoch " ;
+		if (i == k * iterate / 5&&adjust) {
+			k++;
+			learning_rate /= 5;
+		}
 		this->backprop(x_train,y_train,learning_rate);
+		cout << "Training Accuracy: ";
 		double res = this->test(x_train, y_train);
-		cout << "Training Accuracy: " <<res*100<<"%"<< endl;
+		
+		//cout << "b2" << endl;
+		//cout << b2 << endl;
+		if(save)this->save("../../../model/model.txt");
 	}
 	cout << "Training Finished" << endl;
 
@@ -86,11 +110,12 @@ double MLP::prediction(numpy x){
 	return (output.position(0,0)>0.5?1.0:0.0);
 }
 
-double MLP::test(numpy x_test,numpy y_test){
+double MLP::test(numpy &x_test,numpy &y_test){
 	int cnt=0;
 	for(int i=0;i<x_test.rows();++i){
 		if (this->prediction(x_test.get_row(i)) == y_test.position(i, 0))cnt++;
 	}
+	cout << (double)cnt / x_test.rows() * 100 << "%" << endl;
 	return (double) cnt/x_test.rows();
 }
 

@@ -1,5 +1,6 @@
 #include "activation.h"
 
+//activate functions use numpy object as input parameter
 numpy sigmod(numpy& x){
 	vector<vector<double>>data(x.rows(),vector<double>(x.columns(),0.0));
 
@@ -65,6 +66,7 @@ numpy PReLU(numpy& x,double alpha){
 	return res;
 }
 
+//activate functions use double as input parameter
 double sigmod(double x){
 	return 1/(1+exp(-x));
 }

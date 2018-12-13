@@ -44,9 +44,7 @@ int main()try{
 		vector<double> m;
 		for (int j = 0; j < 87; ++j) {
 			n.push_back(A[i][j]);
-			//cout << A[i][j];
 		}
-		//cout << endl;
 		if (i < 0.7*A.size()) {
 			m.push_back(A[i][88]);
 			y_train.push_back(m);
@@ -64,7 +62,8 @@ int main()try{
 	numpy MC{ x_test };
 	numpy MD{ y_test };
 	MLP test = MLP(55);
-	test.train(MA, MB, 200 ,0.0001,false,true);
+	//test.load("../../../model/model.txt");build MLP from file
+	test.train(MA, MB, 200 ,0.1,false,true);
 	test.test(MC,MD);
 	test.save("../../../model/model.txt");
     keep_window_open();

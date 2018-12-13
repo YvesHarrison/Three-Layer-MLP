@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage{indentfirst}
+\usepackage{url}
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{float}
@@ -25,7 +26,13 @@
 \maketitle
 
 \begin{abstract}
-In this we are going to represent reader the basic algorithm of Multi-Layer Perceptron(MLP) and a MLP library written in C++ along with its supporting libraries.
+The report is going to represent reader the basic algorithm of Multi-Layer Perceptron(MLP) and a MLP library written in C++ along with its two supporting libraries, numpy library and activation library. Two tests were delivered to show the usability of the libraries. The introduction and usage method of library APIs are also included. 
+
+Workload:
+
+Xinzhe Li:   Libraries Implementation, Model Testing, Report
+
+Fengyuan Jia:   Data Collecting, Read Data Function Implementation  
 \end{abstract}
 
 \section{Preliminary}
@@ -50,17 +57,17 @@ Machine learning can play an important role in industries which work with massiv
 \label{sec:theory}
 
 \subsection{Data Source}
-Because doing these steps is a complex and huge construction, even no less than the model itself, in particular, it has nothing to do with C++, we use some ready-made clean data to test the workability of our model. 
+It is difficult to implement crawler in C++ to fetch data from Internet automatically. So we use some ready-made clean data to test the workability of our model. 
 
 
-We use the data from https://challenger.ai/competition/trendsense/subject, it is an AI challenge competition which provide stocks data for us to check our model’s ability.
+We use the data from https://challenger.ai/competition/trendsense/subject, it is an AI challenge competition which provide stocks data for us to check our model’s/APIs' ability.
 
 \subsection{Data Explanation}
 
-As we see, there are 87 features in the provided data set, we won’t use the weight column, era column and the group column (Table 1). 
+There are 87 features in the provided data set, we won’t use the weight column, era column and the group column (Table 1). 
 
-We guess that not all features are necessary. These features may in different types, such as fundamentals, technology, finance, Greek and some others. But it is hard to tell which one is useless. It is true that training the model in variable types of the data with less repetition is a good choice. So under this circumstance, we can either manually choose 1 feature in each 10 features (proposed by Fengyuan Jia) or give all features to the model, asking model to figure out and express the relationship between them (proposed by Xinzhe Li).    
-\begin{table}
+We guess that not all features are necessary. These features may in different types, such as fundamentals, technology, finance, Greek and some others. But it is hard to tell which one is useless. It is true that training the model in variable types of the data with less repetition is a good choice. So under this circumstance, we can either manually choose 1 feature in each 10 (less or more) features (proposed by Fengyuan Jia) or give all features to the model, asking model to figure out and express the relationship between them (proposed by Xinzhe Li).    
+\begin{table}[H]
 \centering
 \begin{tabular}{|c|c|c|c|}
  \hline
@@ -73,29 +80,29 @@ weight& label& group& era\\
 10 & 1&11&1\\
 \hline
 \end{tabular}\\
-\caption{\label{tab:widgets}Data Explanation Table.}
+\caption{\label{tab:widgets}Data Example Table.}
 \end{table}
 
 \subsection{Model Application}
-What we want to emphasize most is that the data is as important as the model, though the core part is the model. Users want to use our model needs valid data. The model was implemented for supervised classification problems. So users who want to use the model must provide data contain both label and features. 
+The model/APIs was implemented for supervised classification problems. So users who want to use the model must provide data contain both label and features. 
 
 
-1.First,you can use crawler on Yahoo finance to download data or API in Bloombery and IB to use data online, data is time series features of stock pool or some other things.(Because we want to get finance data), label is the next time period's return rate. And save it into the local file.
+1.First,you can use crawler to collect from Yahoo finance or API in Bloombery and IB data. Generate binary label (0 and 1) from data according to your need (for example: calculate ups and downs, 1 stands for up, 0 stands for down) or use the label provided by supplier. And save data and label into the local file.
 
 
-2.Then, you need to format it and delete the extreme data of features. You need to normalized your different features in same section so that you can use them. Maybe you can check the correlations between your features to determine which you can use in your model.
+2.Second, if your data is not ready-made and clean, you need to format it and delete the extreme data of features. Normalize the data. Then check the correlations between your features and select suitable features.
 
 The Skipped Huber Method:
-\[ D{i,upper} = D_m +5.2D_{MAD},     if D_i \geq D_m+5.2D_{MAD} \]
-\[ D{i,lower} = D_m -5.2D_{MAD},     if D_i \leq D_m+5.2D_{MAD} \]
+\[ D{i,upper} = D_m +5.2D_{MAD},     \ if \ D_i \geq D_m+5.2D_{MAD} \]
+\[ D{i,lower} = D_m -5.2D_{MAD},     \ if \ D_i \leq D_m+5.2D_{MAD} \]
 
 normalized:\[ (D_i-E_D)/STD\]
 
 \subsection{Strategy Building}
-A label tells the machine to be or not to be. For training data, the stock worth to buy has a label of 1, others have a label of 0. The model learns from training data to represent under what circumstances stocks are worth to buy and under what are not. After training model can tell whether to buy or not when new circumstances are provided. In the true world trade, you need to change your positions depending on model forecast(label:0 or 1) as the time goes by . 
+A label tells the machine to be or not to be. For training data, the stock worth to buy has a label of 1, others have a label of 0. The model learns from training data to represent under what circumstances stocks are worth to buy and under what are not. After training model can tell whether to buy or not when new circumstances are provided. In the true world trade, you need to change your positions depending on model forecast (label:0 or 1) as the time goes by. 
 
 
-Finally, it is necessary to not use the data too long from now to train our model. History data may not very valid in nowadays’ market. So, update the knowledge of the model per period by retraining it with new data.
+Finally, it is not necessary to use the data long ago to train the model. History data may not be sufficient enough to represent nowadays’ market condition. So, update the knowledge of the model per period by training it with new data.
 
 \section{Main Work}
 This section will cover the theory foundation and implementation details of three main libraries.   
@@ -113,7 +120,7 @@ Programmer of the group implemented some of the features mentioned above, to fit
 
 
 \subsubsection{Implement Details}
-The library aims to provide basic two dimension matrix operations and calculations. it simulates some of the functions from NumPy library. Operations including reshaping, random generating matrix value. Calculations including addition (matrix and matrix or matrix and double), division (matrix and double/int), star product (matrix and matrix), dot product (matrix and matrix), subtraction (matrix and double/int).
+The library aims to provide basic matrix operations and calculations. it simulates some of the functions from NumPy library. Operations including reshaping, random generating matrix value. Calculations including addition (matrix and matrix or matrix and double), division (matrix and double/int), star product (matrix and matrix), dot product (matrix and matrix), subtraction (matrix and double/int).
 
 \subsubsection{APIs}                                                                    
 This section shows and explains some of important APIs from numpy library.\\\\
@@ -272,7 +279,7 @@ this->b1=numpy(low,high,this->hidden_layer_size,1);
 this->b2=numpy(low,high,1,1);
 \end{lstlisting} 
 
-The forward propagation inputs training data into the MLP to calculate the current output.
+The forward propagation inputs training data into the MLP to calculate the current output. The library can only use sigmod function as the activate function so far. Choosing activate function by sending parameter to object is not included.
 \begin{lstlisting}[language={[ANSI]C++},,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}, title={Forward Propagation},  basicstyle=\footnotesize, numbers=left]  
 numpy tmp=x_train.get_row(j);
 tmp.reshape(x_train.columns(), 1);
@@ -312,6 +319,8 @@ this->w2=this->w2-learning_rate*w2_grad/row;
 this->b1=this->b1-learning_rate*b1_grad/row;
 this->b2=this->b2-learning_rate*b2_grad/row;
 \end{lstlisting}
+
+Program repeats gradient descent until reach the maximum iteration time. The training is complete and the MLP is ready for predicting. Source code available at https://github.com/YvesHarrison/Three-Layer-MLP.
 
 \subsubsection{APIs}
 This section shows how to use some of important APIs from MLP library.\\\\
@@ -362,7 +371,7 @@ backprop(x_train, y_train, 0.01);
 double prediction(numpy x)
 \end{lstlisting}
 
-The function gives a prediction result for one row of numpy data (features only, no need for label).\\
+The function gives a prediction result for one piece of numpy data (features only, no need for label). Getting result from a piece of input data is similar to forward propagation. As a classifier, the function only returns 0.0 or 1.0.\\
 \textbf{Example}
 \begin{lstlisting}[language={[ANSI]C++},keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}]
 test.prediction(x);
@@ -372,7 +381,7 @@ test.prediction(x);
 double test(numpy &x_test,numpy &y_test)
 \end{lstlisting}
 
-The function provides the accuracy of predicting several rows of numpy data (need label).\\
+The function provides the accuracy of predicting several rows of numpy data (need label). It calls prediction function internally. And it compares prediction result with the label of the data and counts the correct ones to calculate accuracy. \\
 \textbf{Example}
 \begin{lstlisting}[language={[ANSI]C++},keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}]
 test.test(x_test, y_test);
@@ -400,11 +409,75 @@ test.load("../../../model/model.txt");
 \section{Test}
 Two test were delivered to show libraries are usable. The code for the first test will not be included in the upload files. It is also not push to GitHub. Only code for the second will be found in these two places. 
 \subsection{Test 1}
-
-
+\subsubsection{Data Format}
+In test 1, each piece of data has ten digital features and a captial English letter as label. Two test objects in test 1 are distinguishing "O", "D" and "O", "X". For distinguishing "O" and "D", we replace "O" with 0 and "D" with 1. For distinguishing "O" and "X", we replace "O" with 0 and "X" with 1. Set up two MLPs for classification.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{data.png}
+\caption{\label{fig:frog}Data Format for Test 1}
+\end{figure}
+\subsubsection{Hyperparameter}
+Users can modify three Hyperparameters while using MLP library. In test 1, hidden layer size, iteration times, learning rate were set as following. Activate function is sigmod function.
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+ \hline
+Hyperparameter& Value \\
+ \hline
+Hidden Layer Size & 5   \\
+ \hline
+Learning Rate& 0.1(fixed)\\
+  \hline
+Iteration times & 200\\
+\hline
+\end{tabular}\\
+\caption{\label{tab:widgets}Hyperparameters for Test 1}
+\end{table}
+\subsubsection{Test Result}
+After training, the MLP model reaches an accuracy of 91.45\% in classifying "O" and "D" and an accuracy of 96.32\% in classifying "O" and "X".
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{res1.png}
+\caption{\label{fig:frog}Data Format for Test 1}
+\end{figure}
 \subsection{Test 2}
-
-
+\subsubsection{Data Format}
+Test 2 uses stock data download from \url{https://challenger.ai/competition/trendsense/subject}. Test uses 87 features and provided label for every piece of data. Label "0" stands for not worth to buy while label "1" stands for worth to buy.
+\subsubsection{Hyperparameter}
+In test 2, hidden layer size, iteration times, learning rate were set as following. Activate function is sigmod function.
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+ \hline
+Hyperparameter& Value \\
+ \hline
+Hidden Layer Size & 55   \\
+ \hline
+Learning Rate& 0.1(fixed)\\
+  \hline
+Iteration times & 200\\
+\hline
+\end{tabular}\\
+\caption{\label{tab:widgets}Hyperparameters for Test 2}
+\end{table}
+\subsubsection{Test Result}
+After training, the MLP model reaches an accuracy of 66.66\% in classifying "worth to buy" and "not worth to buy".
+\begin{figure}[H]
+\begin{minipage}[t]{0.5\textwidth}
+\centering
+\includegraphics[width=2.2in,height=2.5in]{pro.png}
+\caption{Training Log}
+\label{fig:side:a}
+\end{minipage}%
+\begin{minipage}[t]{0.5\textwidth}
+\centering
+\includegraphics[width=2.1in,height=2.5in]{res.png}
+\caption{Result Log}
+\label{fig:side:b}
+\end{minipage}
+\end{figure} 
+\subsection{Summary}
+The hyperparameters used in the test 2 can not be asserted as optimal. It may takes a lot time to find out the best combination of Hyperparameters. This is definitely not the ultimate goal to implement these libraries. The goal is providing an useful tool for data analysis and classification in finance engineering field. Two tests above show the usability and flexibility of the MLP library, fulfilling the goal.
 \section{Conclusion}
 In this project, we successfully implemented a usable and flexible MLP library and its dependent libraries in C++. The test results shows its ability to express and solve finance engineer problems. 
 

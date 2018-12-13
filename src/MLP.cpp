@@ -84,7 +84,7 @@ void MLP::train(numpy &x_train,numpy &y_train,int iterate, double learning_rate,
 		this->b1=numpy(low,high,this->hidden_layer_size,1);
 		this->b2=numpy(low,high,1,1);
 	}
-
+	if (this->w1.columns() != x_train.columns())error("Training data dimension unmatch with the loaded MLP. Please check");
 	cout << "Training Begin"<< endl;
 	int k = 1;
 	for(int i=0;i<iterate;++i){

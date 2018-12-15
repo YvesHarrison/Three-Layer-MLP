@@ -61,8 +61,14 @@ int main()try{
 	numpy MB{ y_train };
 	numpy MC{ x_test };
 	numpy MD{ y_test };
+
+	//use provided data to test our pretrained model
+	//MLP test = MLP();
+	//test.load("../../../model/sigmod-model.txt");//build MLP from saved file which accuracy achieve 66.6%
+	//test.test(MC, MD);
+
+	//Train your own model for provided data
 	MLP test = MLP(55);
-	//test.load("../../../model/model.txt");build MLP from file
 	test.train(MA, MB, 200 ,0.1,false,true);
 	test.test(MC,MD);
 	test.save("../../../model/model.txt");
